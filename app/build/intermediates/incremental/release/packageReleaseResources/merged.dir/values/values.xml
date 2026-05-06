@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#FFF8F9FC</color>
+    <color name="primary">#FF3B82C4</color>
+    <color name="surface">#FFFFFFFF</color>
+    <string name="app_name">ClassApp</string>
+    <style name="Theme.ClassApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
