@@ -1,6 +1,6 @@
-# ClassApp 课程表
+# 山东交通学院课程表
 
-大学生课表管理 Android 应用，基于 Kotlin + Jetpack Compose + Material 3 构建。
+山东交通学院课表管理 Android 应用，基于 Kotlin + Jetpack Compose + Material 3 构建。
 
 ## 功能
 

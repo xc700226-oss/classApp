@@ -48,7 +48,7 @@ fun ProfileScreen(
 
         SettingsItem(
             title = "ClassApp 课程表",
-            subtitle = "版本 1.0.0 · 大学生课表管理工具",
+            subtitle = "版本 1.0.0 · 山东交通学院课表管理工具",
             showArrow = false,
             onClick = {}
         )
