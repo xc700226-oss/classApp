@@ -59,6 +59,12 @@ app/src/main/java/com/classapp/schedule/
     └── WeekUtils.kt             # 周次计算工具类
 ```
 
+## 下载
+
+前往 [GitHub Releases](https://github.com/xc700226-oss/classApp/releases) 下载最新 APK 安装包。
+
+> 最低要求：Android 8.0 (API 26)
+
 ## 快速开始
 
 ### 环境要求
@@ -67,7 +73,7 @@ app/src/main/java/com/classapp/schedule/
 - JDK 17
 - Android SDK 34
 
-### 运行
+### 构建运行
 
 1. 用 Android Studio 打开 `classApp/` 目录
 2. 等待 Gradle Sync 完成
@@ -100,9 +106,7 @@ Course(
     dayOfWeek: Int,     // 星期 (1=周一 .. 7=周日)
     startSlot: Int,     // 开始节次 (1-based)
     endSlot: Int,       // 结束节次
-    weekStart: Int,     // 起始周
-    weekEnd: Int,       // 结束周
-    oddEven: Int,       // 0=全部, 1=单周, 2=双周
+    weeks: String,      // 上课周次 ("1-13" / "1-4,6,8,10,12,14" / "3" / "1-13(单)")
     colorIndex: Int     // 颜色索引
 )
 ```
