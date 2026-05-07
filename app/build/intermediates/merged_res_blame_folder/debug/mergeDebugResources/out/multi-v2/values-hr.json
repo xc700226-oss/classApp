@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.classapp.schedule.app-mergeDebugResources-60:/values-hr/values-hr.xml",
+            "outputFile": "com.classapp.schedule.app-mergeDebugResources-54:/values-hr/values-hr.xml",
             "map": [
                 {
                     "source": "C:\\Users\\田吉鹏\\.gradle\\caches\\transforms-4\\520ab19ab68f5d7bcc024df243fc4ee8\\transformed\\material3-release\\res\\values-hr\\values-hr.xml",

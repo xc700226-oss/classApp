@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.classapp.schedule.app-mergeDebugResources-60:/values-pt-rPT/values-pt-rPT.xml",
+            "outputFile": "com.classapp.schedule.app-mergeDebugResources-54:/values-pt-rPT/values-pt-rPT.xml",
             "map": [
                 {
                     "source": "C:\\Users\\田吉鹏\\.gradle\\caches\\transforms-4\\520ab19ab68f5d7bcc024df243fc4ee8\\transformed\\material3-release\\res\\values-pt-rPT\\values-pt-rPT.xml",

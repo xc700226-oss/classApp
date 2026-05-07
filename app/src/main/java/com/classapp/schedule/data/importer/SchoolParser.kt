@@ -39,7 +39,7 @@ object SchoolParser {
             val day = obj.optInt("day", 1)
             val rowIdx = obj.optInt("row", 0)
             val (s, e) = parseSlots(obj.optString("slots", ""), rowIdx)
-            val (ws, we, oe) = parseWeeks(obj.optString("weeks", ""))
+            val weeks = parseWeeks(obj.optString("weeks", ""))
 
             raw.add(
                 ParsedCourse(
@@ -49,9 +49,7 @@ object SchoolParser {
                     dayOfWeek = day.coerceIn(1, 7),
                     startSlot = s,
                     endSlot = e,
-                    weekStart = ws,
-                    weekEnd = we,
-                    oddEven = oe
+                    weeks = weeks
                 )
             )
         }
@@ -122,7 +120,7 @@ object SchoolParser {
                 val rm = Regex("""上课地点[：:]?\s*(.+)""").find(line)
                 if (rm != null) classroom = rm.groupValues[1].trim()
 
-                val tm = Regex("""上课时间[：:]?\s*第?([\d,\-]+)周\s*星期[一二三四五六日天]\s*\[(\d+)-(\d+)\]节""").find(line)
+                val tm = Regex("""上课时间[：:]?\s*第?([\d,\-]+)\(?\s*周\s*\)?\s*(?:星期[一二三四五六日天]\s*)?\[(\d+)-(\d+)\]节""").find(line)
                 if (tm != null) {
                     weekStr = tm.groupValues[1]
                     slotStr = "[${tm.groupValues[2]}-${tm.groupValues[3]}]节"
@@ -131,8 +129,8 @@ object SchoolParser {
 
             if (name.isNotBlank()) {
                 val (s, e) = parseSlots(slotStr, rowIdx)
-                val (ws, we, oe) = parseWeeks(weekStr)
-                result.add(ParsedCourse(name, "", classroom, day, s, e, ws, we, oe))
+                val weeks = parseWeeks(weekStr)
+                result.add(ParsedCourse(name, "", classroom, day, s, e, weeks = weeks))
             }
             pos = pEnd + 1
         }
@@ -224,9 +222,9 @@ object SchoolParser {
         if (name.isBlank()) return null
 
         val (s, e) = parseSlots(weekInfo, rowIdx)
-        val (ws, we, oe) = parseWeeks(weekInfo)
+        val weeks = parseWeeks(weekInfo)
 
-        return ParsedCourse(name, teacher, classroom, day, s, e, ws, we, oe)
+        return ParsedCourse(name, teacher, classroom, day, s, e, weeks = weeks)
     }
 
     // ---- Slot parsing ----
@@ -253,40 +251,27 @@ object SchoolParser {
 
     // ---- Week parsing (supports "4-12", "2,4,6,8,10,12", "1-4,6,8") ----
 
-    private fun parseWeeks(text: String): Triple<Int, Int, Int> {
+    private fun parseWeeks(text: String): String {
         val clean = text
             .replace(Regex("\\(周\\).*"), "")
-            .replace(Regex("\\(.*\\)"), "")
+            .replace(Regex("\\(.*?\\)"), "")
             .replace(Regex("\\[.*\\]"), "")
             .trim()
-        if (clean.isBlank()) return Triple(1, 20, 0)
+        if (clean.isBlank()) return "1-20"
 
-        val weeks = mutableSetOf<Int>()
-        for (part in clean.split(",")) {
-            val r = Regex("(\\d+)\\s*-\\s*(\\d+)").find(part.trim())
+        // Validate and normalize: keep only valid comma-separated ranges/numbers
+        val parts = clean.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val validParts = mutableListOf<String>()
+        for (part in parts) {
+            val r = Regex("^(\\d+)\\s*-\\s*(\\d+)$").find(part)
             if (r != null) {
-                val s = r.groupValues[1].toIntOrNull() ?: continue
-                val e = r.groupValues[2].toIntOrNull() ?: continue
-                (s..e).forEach { weeks.add(it) }
-            } else {
-                part.trim().toIntOrNull()?.let { weeks.add(it) }
+                validParts.add("${r.groupValues[1]}-${r.groupValues[2]}")
+            } else if (part.toIntOrNull() != null) {
+                validParts.add(part)
             }
         }
 
-        if (weeks.isEmpty()) return Triple(1, 20, 0)
-
-        val hasOdd = weeks.any { it % 2 == 1 }
-        val hasEven = weeks.any { it % 2 == 0 }
-        val oe = when {
-            hasOdd && hasEven -> 0
-            hasOdd -> 1
-            hasEven -> 2
-            else -> 0
-        }
-
-        val minW = weeks.min()
-        val maxW = weeks.max()
-        return Triple(minW, maxW, oe)
+        return if (validParts.isNotEmpty()) validParts.joinToString(",") else "1-20"
     }
 
     // ---- Low-level HTML helpers ----

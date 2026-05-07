@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,6 +40,7 @@ data class ImportWebViewState(
     val currentUrl: String = "",
     val isLoading: Boolean = false,
     val title: String = "",
+    val errorMessage: String? = null,
     val parsedCourses: List<ParsedCourse> = emptyList(),
     val showPreview: Boolean = false,
     val importStatus: ImportStatus = ImportStatus.Idle,
@@ -84,6 +84,14 @@ class ImportWebViewViewModel(application: Application) : AndroidViewModel(applic
         _state.update { it.copy(currentUrl = url, isLoading = false) }
     }
 
+    fun onPageError(message: String) {
+        _state.update { it.copy(isLoading = false, errorMessage = message) }
+    }
+
+    fun clearError() {
+        _state.update { it.copy(errorMessage = null) }
+    }
+
     /** Called from JavaScriptInterface with the extracted JSON array. */
     fun onCoursesExtracted(json: String) {
         Log.d(TAG, "JS注入返回原始JSON: $json")
@@ -101,8 +109,7 @@ class ImportWebViewViewModel(application: Application) : AndroidViewModel(applic
                 courses.forEachIndexed { i, c ->
                     Log.i(TAG, "课程[$i]: name=${c.name}, teacher=${c.teacher}, " +
                             "room=${c.classroom}, day=${c.dayOfWeek}, " +
-                            "slots=${c.startSlot}-${c.endSlot}, weeks=${c.weekStart}-${c.weekEnd}, " +
-                            "oddEven=${c.oddEven}")
+                            "slots=${c.startSlot}-${c.endSlot}, weeks=${c.weeks}")
                 }
                 _state.update {
                     it.copy(
@@ -164,9 +171,7 @@ class ImportWebViewViewModel(application: Application) : AndroidViewModel(applic
                             dayOfWeek = pc.dayOfWeek,
                             startSlot = pc.startSlot,
                             endSlot = pc.endSlot,
-                            weekStart = pc.weekStart,
-                            weekEnd = pc.weekEnd,
-                            oddEven = pc.oddEven,
+                            weeks = pc.weeks,
                             colorIndex = colorIdx
                         )
                     )
@@ -318,9 +323,9 @@ fun ImportWebViewScreen(
     viewModel: ImportWebViewViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    var urlInput by remember { mutableStateOf("") }
     val snackbarHost = remember { SnackbarHostState() }
     val context = LocalContext.current
+    var urlInput by remember { mutableStateOf("https://wwebvpn.sdjtu.edu.cn/") }
 
     // Create WebView at composable level so both bottomBar and content can access it
     val webView = remember {
@@ -340,9 +345,8 @@ fun ImportWebViewScreen(
                 builtInZoomControls = true
                 displayZoomControls = false
                 setSupportZoom(true)
-                allowFileAccess = false
-                allowContentAccess = false
-                cacheMode = WebSettings.LOAD_NO_CACHE
+                allowFileAccess = true
+                allowContentAccess = true
             }
 
             isVerticalScrollBarEnabled = true
@@ -358,6 +362,10 @@ fun ImportWebViewScreen(
 
             addJavascriptInterface(ImportJsBridge(viewModel), "AndroidBridge")
 
+            // 自动加载教务系统 WebVPN
+            loadUrl("https://wwebvpn.sdjtu.edu.cn/")
+
+            @Suppress("DEPRECATION")
             webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
@@ -379,9 +387,29 @@ fun ImportWebViewScreen(
                     view: WebView?, request: WebResourceRequest?, error: WebResourceError?
                 ) {
                     super.onReceivedError(view, request, error)
-                    // ERR_CACHE_MISS occurs with POST-heavy pages; clear cache and retry
                     if (request?.isForMainFrame == true) {
-                        view?.clearCache(true)
+                        val desc = error?.description?.toString() ?: "未知错误"
+                        viewModel.onPageError("加载失败: $desc")
+                    }
+                }
+
+                @Deprecated("Deprecated in Java")
+                override fun onReceivedError(
+                    view: WebView?, errorCode: Int, description: String?, failingUrl: String?
+                ) {
+                    super.onReceivedError(view, errorCode, description, failingUrl)
+                    val desc = description ?: "未知错误"
+                    viewModel.onPageError("加载失败 ($errorCode): $desc")
+                }
+
+                override fun onReceivedHttpError(
+                    view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?
+                ) {
+                    super.onReceivedHttpError(view, request, errorResponse)
+                    if (request?.isForMainFrame == true) {
+                        val code = errorResponse?.statusCode ?: 0
+                        val reason = errorResponse?.reasonPhrase ?: ""
+                        viewModel.onPageError("服务器错误 HTTP $code $reason")
                     }
                 }
 
@@ -441,34 +469,33 @@ fun ImportWebViewScreen(
         bottomBar = {
             Surface(tonalElevation = 3.dp) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    // URL bar with Go button
+                    // URL input bar
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         OutlinedTextField(
                             value = urlInput,
                             onValueChange = { urlInput = it },
-                            placeholder = { Text("教务系统网址") },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
+                            placeholder = { Text("输入教务系统网址") },
                             singleLine = true,
-                            textStyle = MaterialTheme.typography.bodySmall
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp)
                         )
-
-                        IconButton(onClick = {
-                            val url = urlInput.trim()
-                            if (url.isNotEmpty()) {
-                                val fullUrl = if (!url.startsWith("http")) "https://$url" else url
-                                webView.loadUrl(fullUrl)
-                            }
-                        }) {
-                            Icon(
-                                Icons.Default.NavigateNext,
-                                contentDescription = "跳转",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                        Button(
+                            onClick = {
+                                val url = urlInput.trim()
+                                if (url.isNotEmpty()) {
+                                    val finalUrl = if (url.startsWith("http://") || url.startsWith("https://")) url else "https://$url"
+                                    viewModel.clearError()
+                                    viewModel.updateUrl(finalUrl)
+                                    webView.loadUrl(finalUrl)
+                                }
+                            },
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("前往")
                         }
                     }
 
@@ -507,44 +534,66 @@ fun ImportWebViewScreen(
                 )
             }
 
+            // Error card
+            if (state.errorMessage != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .align(Alignment.TopCenter),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.95f)
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            state.errorMessage!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(onClick = { viewModel.clearError() }) {
+                                Text("关闭")
+                            }
+                            Button(onClick = {
+                                viewModel.clearError()
+                                webView.reload()
+                            }) {
+                                Text("重试")
+                            }
+                        }
+                    }
+                }
+            }
+
             // WebView
             AndroidView(
                 factory = { webView },
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Instruction overlay when URL is empty
-            if (urlInput.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp)
-                        .align(Alignment.TopCenter),
-                    horizontalAlignment = Alignment.CenterHorizontally
+            // 操作提示
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                    )
                 ) {
-                    Card(
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f)
-                        )
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "使用说明",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "1. 在下方输入框粘贴教务系统的网址，点击跳转\n" +
-                                "2. 在打开的页面中登录教务系统\n" +
-                                "3. 导航到「学期理论课表」页面\n" +
-                                "4. 点击「解析当前课表」自动提取课程",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
+                    Text(
+                        "在下方输入教务系统网址，登录后进入「学期理论课表」页面，点击「解析当前课表」",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                    )
                 }
             }
         }

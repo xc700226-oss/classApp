@@ -178,13 +178,15 @@ fun AddCourseScreen(
 
             // Week range
             SectionLabel("上课周次")
-            WeekRangeSelector(
-                weekStart = formState.weekStart,
-                weekEnd = formState.weekEnd,
-                oddEven = formState.oddEven,
-                onWeekStartChange = { viewModel.updateWeekStart(it) },
-                onWeekEndChange = { viewModel.updateWeekEnd(it) },
-                onOddEvenChange = { viewModel.updateOddEven(it) }
+            OutlinedTextField(
+                value = formState.weeks,
+                onValueChange = { viewModel.updateWeeks(it) },
+                label = { Text("周次") },
+                placeholder = { Text("例：1-13 或 1-4,6,8,10,12,14 或 3") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                supportingText = { Text("支持格式：1-13（连续）、3（单周）、1-4,6,8（混合）、1-13(单)（单双周）") }
             )
 
             // Color picker
@@ -320,107 +322,6 @@ private fun SlotSelector(
                         }
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun WeekRangeSelector(
-    weekStart: Int,
-    weekEnd: Int,
-    oddEven: Int,
-    onWeekStartChange: (Int) -> Unit,
-    onWeekEndChange: (Int) -> Unit,
-    onOddEvenChange: (Int) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Week start
-            var startExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = startExpanded,
-                onExpandedChange = { startExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = "第${weekStart}周",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("起始周") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = startExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                ExposedDropdownMenu(
-                    expanded = startExpanded,
-                    onDismissRequest = { startExpanded = false }
-                ) {
-                    (1..weekEnd).forEach { week ->
-                        DropdownMenuItem(
-                            text = { Text("第${week}周") },
-                            onClick = {
-                                onWeekStartChange(week)
-                                startExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Week end
-            var endExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = endExpanded,
-                onExpandedChange = { endExpanded = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = "第${weekEnd}周",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("结束周") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = endExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-
-                ExposedDropdownMenu(
-                    expanded = endExpanded,
-                    onDismissRequest = { endExpanded = false }
-                ) {
-                    (weekStart..WeekUtils.totalWeeks).forEach { week ->
-                        DropdownMenuItem(
-                            text = { Text("第${week}周") },
-                            onClick = {
-                                onWeekEndChange(week)
-                                endExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        // Odd/Even filter
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val options = listOf(
-                0 to "全部",
-                1 to "单周",
-                2 to "双周"
-            )
-
-            options.forEach { (value, label) ->
-                val isSelected = oddEven == value
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { onOddEvenChange(value) },
-                    label = { Text(label) }
-                )
             }
         }
     }

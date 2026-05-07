@@ -13,8 +13,6 @@ data class Course(
     val dayOfWeek: Int, // 1=Mon ... 7=Sun
     val startSlot: Int, // 1-based
     val endSlot: Int,
-    val weekStart: Int = 1,
-    val weekEnd: Int = 20,
-    val oddEven: Int = 0, // 0=all, 1=odd weeks, 2=even weeks
+    val weeks: String = "1-20", // e.g. "1-13", "3", "1-4,6,8,10,12,14", "1-13(单)"
     val colorIndex: Int = 0
 )

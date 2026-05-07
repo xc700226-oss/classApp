@@ -47,7 +47,7 @@ public final class CourseDao_Impl implements CourseDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `courses` (`id`,`name`,`teacher`,`classroom`,`dayOfWeek`,`startSlot`,`endSlot`,`weekStart`,`weekEnd`,`oddEven`,`colorIndex`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `courses` (`id`,`name`,`teacher`,`classroom`,`dayOfWeek`,`startSlot`,`endSlot`,`weeks`,`colorIndex`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -60,10 +60,8 @@ public final class CourseDao_Impl implements CourseDao {
         statement.bindLong(5, entity.getDayOfWeek());
         statement.bindLong(6, entity.getStartSlot());
         statement.bindLong(7, entity.getEndSlot());
-        statement.bindLong(8, entity.getWeekStart());
-        statement.bindLong(9, entity.getWeekEnd());
-        statement.bindLong(10, entity.getOddEven());
-        statement.bindLong(11, entity.getColorIndex());
+        statement.bindString(8, entity.getWeeks());
+        statement.bindLong(9, entity.getColorIndex());
       }
     };
     this.__deletionAdapterOfCourse = new EntityDeletionOrUpdateAdapter<Course>(__db) {
@@ -83,7 +81,7 @@ public final class CourseDao_Impl implements CourseDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `courses` SET `id` = ?,`name` = ?,`teacher` = ?,`classroom` = ?,`dayOfWeek` = ?,`startSlot` = ?,`endSlot` = ?,`weekStart` = ?,`weekEnd` = ?,`oddEven` = ?,`colorIndex` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `courses` SET `id` = ?,`name` = ?,`teacher` = ?,`classroom` = ?,`dayOfWeek` = ?,`startSlot` = ?,`endSlot` = ?,`weeks` = ?,`colorIndex` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -96,11 +94,9 @@ public final class CourseDao_Impl implements CourseDao {
         statement.bindLong(5, entity.getDayOfWeek());
         statement.bindLong(6, entity.getStartSlot());
         statement.bindLong(7, entity.getEndSlot());
-        statement.bindLong(8, entity.getWeekStart());
-        statement.bindLong(9, entity.getWeekEnd());
-        statement.bindLong(10, entity.getOddEven());
-        statement.bindLong(11, entity.getColorIndex());
-        statement.bindLong(12, entity.getId());
+        statement.bindString(8, entity.getWeeks());
+        statement.bindLong(9, entity.getColorIndex());
+        statement.bindLong(10, entity.getId());
       }
     };
     this.__preparedStmtOfDeleteAll = new SharedSQLiteStatement(__db) {
@@ -207,9 +203,7 @@ public final class CourseDao_Impl implements CourseDao {
           final int _cursorIndexOfDayOfWeek = CursorUtil.getColumnIndexOrThrow(_cursor, "dayOfWeek");
           final int _cursorIndexOfStartSlot = CursorUtil.getColumnIndexOrThrow(_cursor, "startSlot");
           final int _cursorIndexOfEndSlot = CursorUtil.getColumnIndexOrThrow(_cursor, "endSlot");
-          final int _cursorIndexOfWeekStart = CursorUtil.getColumnIndexOrThrow(_cursor, "weekStart");
-          final int _cursorIndexOfWeekEnd = CursorUtil.getColumnIndexOrThrow(_cursor, "weekEnd");
-          final int _cursorIndexOfOddEven = CursorUtil.getColumnIndexOrThrow(_cursor, "oddEven");
+          final int _cursorIndexOfWeeks = CursorUtil.getColumnIndexOrThrow(_cursor, "weeks");
           final int _cursorIndexOfColorIndex = CursorUtil.getColumnIndexOrThrow(_cursor, "colorIndex");
           final List<Course> _result = new ArrayList<Course>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -228,15 +222,11 @@ public final class CourseDao_Impl implements CourseDao {
             _tmpStartSlot = _cursor.getInt(_cursorIndexOfStartSlot);
             final int _tmpEndSlot;
             _tmpEndSlot = _cursor.getInt(_cursorIndexOfEndSlot);
-            final int _tmpWeekStart;
-            _tmpWeekStart = _cursor.getInt(_cursorIndexOfWeekStart);
-            final int _tmpWeekEnd;
-            _tmpWeekEnd = _cursor.getInt(_cursorIndexOfWeekEnd);
-            final int _tmpOddEven;
-            _tmpOddEven = _cursor.getInt(_cursorIndexOfOddEven);
+            final String _tmpWeeks;
+            _tmpWeeks = _cursor.getString(_cursorIndexOfWeeks);
             final int _tmpColorIndex;
             _tmpColorIndex = _cursor.getInt(_cursorIndexOfColorIndex);
-            _item = new Course(_tmpId,_tmpName,_tmpTeacher,_tmpClassroom,_tmpDayOfWeek,_tmpStartSlot,_tmpEndSlot,_tmpWeekStart,_tmpWeekEnd,_tmpOddEven,_tmpColorIndex);
+            _item = new Course(_tmpId,_tmpName,_tmpTeacher,_tmpClassroom,_tmpDayOfWeek,_tmpStartSlot,_tmpEndSlot,_tmpWeeks,_tmpColorIndex);
             _result.add(_item);
           }
           return _result;
@@ -271,9 +261,7 @@ public final class CourseDao_Impl implements CourseDao {
           final int _cursorIndexOfDayOfWeek = CursorUtil.getColumnIndexOrThrow(_cursor, "dayOfWeek");
           final int _cursorIndexOfStartSlot = CursorUtil.getColumnIndexOrThrow(_cursor, "startSlot");
           final int _cursorIndexOfEndSlot = CursorUtil.getColumnIndexOrThrow(_cursor, "endSlot");
-          final int _cursorIndexOfWeekStart = CursorUtil.getColumnIndexOrThrow(_cursor, "weekStart");
-          final int _cursorIndexOfWeekEnd = CursorUtil.getColumnIndexOrThrow(_cursor, "weekEnd");
-          final int _cursorIndexOfOddEven = CursorUtil.getColumnIndexOrThrow(_cursor, "oddEven");
+          final int _cursorIndexOfWeeks = CursorUtil.getColumnIndexOrThrow(_cursor, "weeks");
           final int _cursorIndexOfColorIndex = CursorUtil.getColumnIndexOrThrow(_cursor, "colorIndex");
           final List<Course> _result = new ArrayList<Course>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -292,15 +280,11 @@ public final class CourseDao_Impl implements CourseDao {
             _tmpStartSlot = _cursor.getInt(_cursorIndexOfStartSlot);
             final int _tmpEndSlot;
             _tmpEndSlot = _cursor.getInt(_cursorIndexOfEndSlot);
-            final int _tmpWeekStart;
-            _tmpWeekStart = _cursor.getInt(_cursorIndexOfWeekStart);
-            final int _tmpWeekEnd;
-            _tmpWeekEnd = _cursor.getInt(_cursorIndexOfWeekEnd);
-            final int _tmpOddEven;
-            _tmpOddEven = _cursor.getInt(_cursorIndexOfOddEven);
+            final String _tmpWeeks;
+            _tmpWeeks = _cursor.getString(_cursorIndexOfWeeks);
             final int _tmpColorIndex;
             _tmpColorIndex = _cursor.getInt(_cursorIndexOfColorIndex);
-            _item = new Course(_tmpId,_tmpName,_tmpTeacher,_tmpClassroom,_tmpDayOfWeek,_tmpStartSlot,_tmpEndSlot,_tmpWeekStart,_tmpWeekEnd,_tmpOddEven,_tmpColorIndex);
+            _item = new Course(_tmpId,_tmpName,_tmpTeacher,_tmpClassroom,_tmpDayOfWeek,_tmpStartSlot,_tmpEndSlot,_tmpWeeks,_tmpColorIndex);
             _result.add(_item);
           }
           return _result;

@@ -57,9 +57,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     fun getCoursesForWeek(): List<Pair<Course, Boolean>> {
         val week = _uiState.value.currentWeek
         return _uiState.value.courses.map { course ->
-            course to WeekUtils.isCourseActiveThisWeek(
-                course.weekStart, course.weekEnd, course.oddEven, week
-            )
+            course to WeekUtils.isCourseActiveThisWeek(course.weeks, week)
         }
     }
 

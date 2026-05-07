@@ -18,9 +18,7 @@ data class CourseFormState(
     val dayOfWeek: Int = 1,
     val startSlot: Int = 1,
     val endSlot: Int = 2,
-    val weekStart: Int = 1,
-    val weekEnd: Int = 20,
-    val oddEven: Int = 0,
+    val weeks: String = "1-20",
     val colorIndex: Int = 0,
     val editingCourseId: Long? = null
 )
@@ -46,9 +44,7 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             dayOfWeek = course.dayOfWeek,
             startSlot = course.startSlot,
             endSlot = course.endSlot,
-            weekStart = course.weekStart,
-            weekEnd = course.weekEnd,
-            oddEven = course.oddEven,
+            weeks = course.weeks,
             colorIndex = course.colorIndex,
             editingCourseId = course.id
         )
@@ -60,9 +56,7 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     fun updateDay(day: Int) { _formState.update { it.copy(dayOfWeek = day) } }
     fun updateStartSlot(slot: Int) { _formState.update { it.copy(startSlot = slot) } }
     fun updateEndSlot(slot: Int) { _formState.update { it.copy(endSlot = slot) } }
-    fun updateWeekStart(week: Int) { _formState.update { it.copy(weekStart = week) } }
-    fun updateWeekEnd(week: Int) { _formState.update { it.copy(weekEnd = week) } }
-    fun updateOddEven(oe: Int) { _formState.update { it.copy(oddEven = oe) } }
+    fun updateWeeks(weeks: String) { _formState.update { it.copy(weeks = weeks) } }
     fun updateColor(index: Int) { _formState.update { it.copy(colorIndex = index) } }
 
     fun save(onSuccess: () -> Unit) {
@@ -78,9 +72,7 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
                 dayOfWeek = state.dayOfWeek,
                 startSlot = state.startSlot,
                 endSlot = state.endSlot,
-                weekStart = state.weekStart,
-                weekEnd = state.weekEnd,
-                oddEven = state.oddEven,
+                weeks = state.weeks.trim(),
                 colorIndex = state.colorIndex
             )
 

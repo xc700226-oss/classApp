@@ -14,9 +14,7 @@ data class ParsedCourse(
     val dayOfWeek: Int = 1,
     val startSlot: Int = 1,
     val endSlot: Int = 2,
-    val weekStart: Int = 1,
-    val weekEnd: Int = 20,
-    val oddEven: Int = 0,
+    val weeks: String = "1-20",
     val colorIndex: Int = 0
 )
 
@@ -208,6 +206,15 @@ class ExcelImporter(private val context: Context) {
             val startStr = getField(row, startSlotIdx, "1")
             val endStr = getField(row, endSlotIdx, "2")
 
+            val ws = getField(row, weekStartIdx, "1").toIntOrNull() ?: 1
+            val we = getField(row, weekEndIdx, "20").toIntOrNull() ?: 20
+            val oe = getField(row, oddEvenIdx, "0").toIntOrNull() ?: 0
+            val weeksStr = when (oe) {
+                1 -> "$ws-$we(单)"
+                2 -> "$ws-$we(双)"
+                else -> "$ws-$we"
+            }
+
             courses.add(
                 ParsedCourse(
                     name = name,
@@ -216,9 +223,7 @@ class ExcelImporter(private val context: Context) {
                     dayOfWeek = parseDayOfWeek(dayStr),
                     startSlot = parseSlot(startStr),
                     endSlot = parseSlot(endStr),
-                    weekStart = getField(row, weekStartIdx, "1").toIntOrNull() ?: 1,
-                    weekEnd = getField(row, weekEndIdx, "20").toIntOrNull() ?: 20,
-                    oddEven = getField(row, oddEvenIdx, "0").toIntOrNull() ?: 0
+                    weeks = weeksStr
                 )
             )
         }
@@ -276,10 +281,7 @@ class ExcelImporter(private val context: Context) {
                         classroom = classroom,
                         dayOfWeek = day,
                         startSlot = range.first,
-                        endSlot = range.last,
-                        weekStart = 1,
-                        weekEnd = 20,
-                        oddEven = 0
+                        endSlot = range.last
                     )
                 )
             }

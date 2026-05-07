@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.classapp.schedule.app-mergeDebugResources-60:/values-sr/values-sr.xml",
+            "outputFile": "com.classapp.schedule.app-mergeDebugResources-54:/values-sr/values-sr.xml",
             "map": [
                 {
                     "source": "C:\\Users\\田吉鹏\\.gradle\\caches\\transforms-4\\52c778845c3a07e45e135973046b3640\\transformed\\ui-release\\res\\values-sr\\values-sr.xml",

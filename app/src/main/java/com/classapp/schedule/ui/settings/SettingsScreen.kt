@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,8 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -143,113 +140,6 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── 教务系统账号 ──
-            SectionHeader("教务系统账号")
-
-            // 教务系统网址
-            OutlinedTextField(
-                value = uiState.portalUrl,
-                onValueChange = { viewModel.updatePortalUrl(it) },
-                label = { Text("教务系统网址") },
-                placeholder = { Text("https://jwxt.example.edu.cn") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            // 学号
-            OutlinedTextField(
-                value = uiState.username,
-                onValueChange = { viewModel.updateUsername(it) },
-                label = { Text("学号") },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            // 密码
-            OutlinedTextField(
-                value = uiState.password,
-                onValueChange = { viewModel.updatePassword(it) },
-                label = { Text("密码") },
-                placeholder = {
-                    if (uiState.hasStoredCredentials) Text("已保存，不修改请留空")
-                },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            // 保存凭据按钮
-            Button(
-                onClick = { viewModel.saveCredentials() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("保存凭据")
-            }
-
-            // 自动同步开关
-            SettingsItemWithSwitch(
-                title = "自动同步课表",
-                subtitle = "每24小时自动从教务系统获取最新课表",
-                checked = uiState.autoFetchEnabled,
-                onCheckedChange = { viewModel.toggleAutoFetch(it) }
-            )
-
-            // 立即同步
-            SettingsItem(
-                title = "立即同步",
-                subtitle = if (uiState.lastSyncTime > 0) {
-                    "上次同步: ${java.text.SimpleDateFormat("MM/dd HH:mm", java.util.Locale.getDefault()).format(java.util.Date(uiState.lastSyncTime))}"
-                } else {
-                    "点击立即从教务系统获取课表"
-                },
-                value = null,
-                showArrow = true,
-                onClick = { viewModel.manualSync() }
-            )
-
-            // 同步状态
-            when (val status = uiState.syncStatus) {
-                is SyncStatus.Syncing -> {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                    )
-                }
-                is SyncStatus.Success -> {
-                    Text(
-                        status.message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                    )
-                }
-                is SyncStatus.Error -> {
-                    Text(
-                        status.message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                    )
-                }
-                else -> {}
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // ── 导入课表 ──
             SectionHeader("导入课表")
 
@@ -291,19 +181,6 @@ fun SettingsScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // ── 关于 ──
-            SectionHeader("关于")
-
-            SettingsItem(
-                title = "ClassApp 课程表",
-                subtitle = "版本 1.0.0 · 大学生课表管理工具",
-                value = null,
-                showArrow = false,
-                onClick = {}
-            )
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -382,13 +259,8 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     courses.take(5).forEach { course ->
                         val day = getDayName(course.dayOfWeek)
-                        val oddEvenText = when (course.oddEven) {
-                            1 -> " 单周"
-                            2 -> " 双周"
-                            else -> ""
-                        }
                         Text(
-                            "• ${course.name}（${day} 第${course.startSlot}-${course.endSlot}节$oddEvenText）",
+                            "• ${course.name}（${day} 第${course.startSlot}-${course.endSlot}节 第${course.weeks}周）",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

@@ -1,12 +1,9 @@
 package com.classapp.schedule.ui.navigation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -27,6 +24,7 @@ import androidx.navigation.navArgument
 import com.classapp.schedule.data.model.Course
 import com.classapp.schedule.ui.course.AddCourseScreen
 import com.classapp.schedule.ui.course.CourseViewModel
+import com.classapp.schedule.ui.profile.ProfileScreen
 import com.classapp.schedule.ui.schedule.ScheduleScreen
 import com.classapp.schedule.ui.schoolimport.ImportWebViewScreen
 import com.classapp.schedule.ui.settings.SettingsScreen
@@ -39,15 +37,13 @@ object Routes {
     const val EDIT_COURSE = "edit_course/{courseJson}"
     const val SETTINGS = "settings"
     const val IMPORT_WEBVIEW = "import_webview"
-    const val TOOLBOX = "toolbox"
     const val PROFILE = "profile"
-    const val ABOUT = "about"
 
     fun addCourse(defaultDay: Int? = null) = "add_course/${defaultDay ?: -1}"
     fun editCourse(course: Course) = "edit_course/${Gson().toJson(course)}"
 
     // 底部导航 tab 路由
-    val bottomNavRoutes = setOf(SCHEDULE, TOOLBOX, PROFILE, ABOUT)
+    val bottomNavRoutes = setOf(SCHEDULE, PROFILE)
 }
 
 // ── 底部导航 tab 定义 ──
@@ -59,9 +55,7 @@ private data class BottomNavTab(
 
 private val bottomNavTabs = listOf(
     BottomNavTab(Routes.SCHEDULE, "课程表", Icons.Default.DateRange),
-    BottomNavTab(Routes.TOOLBOX, "工具箱", Icons.Default.Build),
     BottomNavTab(Routes.PROFILE, "用户", Icons.Default.Person),
-    BottomNavTab(Routes.ABOUT, "关于", Icons.Default.Info),
 )
 
 @Composable
@@ -134,15 +128,10 @@ fun AppNavGraph(navController: NavHostController) {
                 ImportWebViewScreen(onBack = { navController.popBackStack() })
             }
 
-            // ── 占位页面 ──
-            composable(Routes.TOOLBOX) {
-                PlaceholderScreen(title = "工具箱")
-            }
             composable(Routes.PROFILE) {
-                PlaceholderScreen(title = "用户")
-            }
-            composable(Routes.ABOUT) {
-                PlaceholderScreen(title = "关于")
+                ProfileScreen(
+                    onNavigateToImport = { navController.navigate(Routes.IMPORT_WEBVIEW) }
+                )
             }
         }
     }
@@ -191,23 +180,5 @@ private fun BottomNavBar(
                 }
             }
         }
-    }
-}
-
-// ── 占位页面 ──
-@Composable
-private fun PlaceholderScreen(title: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppBackground),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextPrimary
-        )
     }
 }

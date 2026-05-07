@@ -88,11 +88,35 @@ object WeekUtils {
         return monday.plusDays((dayOfWeek - 1).toLong())
     }
 
-    fun isCourseActiveThisWeek(courseWeekStart: Int, courseWeekEnd: Int, oddEven: Int, week: Int): Boolean {
-        if (week < courseWeekStart || week > courseWeekEnd) return false
-        if (oddEven == 1) return week % 2 == 1
-        if (oddEven == 2) return week % 2 == 0
-        return true
+    fun isCourseActiveThisWeek(weeks: String, week: Int): Boolean {
+        val weekSet = parseWeekSet(weeks)
+        return week in weekSet
+    }
+
+    fun parseWeekSet(weeks: String): Set<Int> {
+        val result = mutableSetOf<Int>()
+        // Handle "(单)" / "(双)" suffix on entire string
+        val isOdd = weeks.contains("(单)")
+        val isEven = weeks.contains("(双)")
+        val cleaned = weeks.replace(Regex("\\(单\\)|\\(双\\)"), "").trim()
+
+        for (part in cleaned.split(",")) {
+            val trimmed = part.trim()
+            val range = Regex("^(\\d+)-(\\d+)$").find(trimmed)
+            if (range != null) {
+                val s = range.groupValues[1].toIntOrNull() ?: continue
+                val e = range.groupValues[2].toIntOrNull() ?: continue
+                (s..e).forEach { result.add(it) }
+            } else {
+                trimmed.toIntOrNull()?.let { result.add(it) }
+            }
+        }
+
+        return when {
+            isOdd -> result.filter { it % 2 == 1 }.toSet()
+            isEven -> result.filter { it % 2 == 0 }.toSet()
+            else -> result
+        }
     }
 
     fun getDayName(dayIndex: Int): String = when (dayIndex) {

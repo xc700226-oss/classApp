@@ -43,6 +43,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -78,14 +79,6 @@ dependencies {
     // Gson for import/export
     implementation("com.google.code.gson:gson:2.11.0")
 
-    // OkHttp (HTTP client for auto-sync)
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // WorkManager (background periodic sync)
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
-
-    // Encrypted SharedPreferences (credential storage)
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")

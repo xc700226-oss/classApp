@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-28:12
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-29:12
+INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:2:1-29:12
 MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\田吉鹏\.gradle\caches\transforms-4\d4d9b42fd99c010f9c40bc4dd2417533\transformed\navigation-common-2.7.7\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\田吉鹏\.gradle\caches\transforms-4\116501d1c68d6312a3677cb09d8c6338\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\田吉鹏\.gradle\caches\transforms-4\5f6c3863af31afd1aa12f4774cb1a5bd\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:2:1-7:12
@@ -81,8 +81,8 @@ ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:7:5-7
 	android:name
 		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:7:22-76
 application
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:9:5-26:19
-INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:9:5-26:19
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:9:5-27:19
+INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:9:5-27:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\田吉鹏\.gradle\caches\transforms-4\a4a1d3c8a5057544deb15928680b83f0\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\田吉鹏\.gradle\caches\transforms-4\a4a1d3c8a5057544deb15928680b83f0\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.lifecycle:lifecycle-process:2.8.2] C:\Users\田吉鹏\.gradle\caches\transforms-4\3ccacad08c22bc55c6e4d8aa3c16613c\transformed\lifecycle-process-2.8.2\AndroidManifest.xml:23:5-33:19
@@ -111,26 +111,28 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\田吉鹏\.gradle\
 		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:11:9-35
 	android:theme
 		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:15:9-46
+	android:usesCleartextTraffic
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:16:9-44
 	android:name
 		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:10:9-33
 activity#com.classapp.schedule.MainActivity
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:17:9-25:20
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:18:9-26:20
 	android:windowSoftInputMode
-		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:20:13-55
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:21:13-55
 	android:exported
-		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:19:13-36
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:20:13-36
 	android:name
-		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:18:13-41
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:19:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:21:13-24:29
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:22:13-25:29
 action#android.intent.action.MAIN
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:22:17-69
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:23:17-69
 	android:name
-		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:22:25-66
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:23:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:23:17-77
+ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:24:17-77
 	android:name
-		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:23:27-74
+		ADDED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml:24:27-74
 uses-sdk
 INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\develop\VsCodeDemo\classApp\app\src\main\AndroidManifest.xml

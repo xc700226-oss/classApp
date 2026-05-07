@@ -1,5 +1,7 @@
 package com.classapp.schedule.ui.schedule
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.classapp.schedule.data.model.Course
 import com.classapp.schedule.ui.theme.*
 import com.classapp.schedule.util.WeekUtils
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -69,22 +74,50 @@ fun ScheduleScreen(
     val weekSubtitle = "第 ${uiState.currentWeek} 周" +
         if (isCurrentWeek) " (本周) $dayOfWeekName" else " $dayOfWeekName"
 
-    // 滑动切周
+    // 滑动切周动画
+    val swipeOffset = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
     var swipeAccumulator by remember { mutableFloatStateOf(0f) }
+    val density = LocalDensity.current
+    val screenWidthPx = with(density) { androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp.toPx() }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(AppBackground)
+            .graphicsLayer { translationX = swipeOffset.value }
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragStart = { swipeAccumulator = 0f },
-                    onHorizontalDrag = { _, dragAmount -> swipeAccumulator += dragAmount },
+                    onHorizontalDrag = { _, dragAmount ->
+                        swipeAccumulator += dragAmount
+                        coroutineScope.launch {
+                            swipeOffset.snapTo(swipeAccumulator * 0.6f)
+                        }
+                    },
                     onDragEnd = {
-                        if (swipeAccumulator < -SWIPE_THRESHOLD) {
-                            viewModel.nextWeek()
-                        } else if (swipeAccumulator > SWIPE_THRESHOLD) {
-                            viewModel.previousWeek()
+                        val threshold = SWIPE_THRESHOLD
+                        if (swipeAccumulator < -threshold) {
+                            // 左滑 → 下一周，滑出动画
+                            coroutineScope.launch {
+                                swipeOffset.animateTo(-screenWidthPx, tween(200))
+                                viewModel.nextWeek()
+                                swipeOffset.snapTo(screenWidthPx)
+                                swipeOffset.animateTo(0f, tween(200))
+                            }
+                        } else if (swipeAccumulator > threshold) {
+                            // 右滑 → 上一周，滑出动画
+                            coroutineScope.launch {
+                                swipeOffset.animateTo(screenWidthPx, tween(200))
+                                viewModel.previousWeek()
+                                swipeOffset.snapTo(-screenWidthPx)
+                                swipeOffset.animateTo(0f, tween(200))
+                            }
+                        } else {
+                            // 未达阈值，弹回
+                            coroutineScope.launch {
+                                swipeOffset.animateTo(0f, tween(150))
+                            }
                         }
                         swipeAccumulator = 0f
                     }
@@ -483,9 +516,7 @@ private fun buildGridCourses(
 ): List<GridCourse> {
     val result = mutableListOf<GridCourse>()
     for (course in allCourses) {
-        val active = WeekUtils.isCourseActiveThisWeek(
-            course.weekStart, course.weekEnd, course.oddEven, currentWeek
-        )
+        val active = WeekUtils.isCourseActiveThisWeek(course.weeks, currentWeek)
         if (!active && !showNonCurrentWeek) continue
         val startIdx = WeekUtils.getSlotGroupIndex(course.startSlot)
         val endIdx = WeekUtils.getSlotGroupIndex(course.endSlot)

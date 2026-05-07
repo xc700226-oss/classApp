@@ -37,10 +37,6 @@ int attr startDestination 0x7f010023
 int attr targetPackage 0x7f010024
 int attr ttcIndex 0x7f010025
 int attr uri 0x7f010026
-int bool enable_system_alarm_service_default 0x7f0c0000
-int bool enable_system_foreground_service_default 0x7f0c0001
-int bool enable_system_job_service_default 0x7f0c0002
-int bool workmanager_test_configuration 0x7f0c0003
 int color androidx_core_ripple_material_light 0x7f020000
 int color androidx_core_secondary_text_default_material_light 0x7f020001
 int color background 0x7f020002
