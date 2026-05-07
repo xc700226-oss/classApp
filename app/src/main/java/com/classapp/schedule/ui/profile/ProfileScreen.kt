@@ -1,5 +1,7 @@
 package com.classapp.schedule.ui.profile
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,6 +22,8 @@ import androidx.compose.ui.unit.sp
 fun ProfileScreen(
     onNavigateToImport: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,6 +51,16 @@ fun ProfileScreen(
             subtitle = "版本 1.0.0 · 大学生课表管理工具",
             showArrow = false,
             onClick = {}
+        )
+
+        SettingsItem(
+            title = "开源地址",
+            subtitle = "github.com/xc700226-oss/classApp",
+            showArrow = true,
+            onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/xc700226-oss/classApp"))
+                context.startActivity(intent)
+            }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
